@@ -82,6 +82,20 @@ def send(text, reply=None, markup=None, parse_mode=None):
     return api("sendMessage", **data)
 
 
+def cleanup_workspace(path, log, final):
+    """Remove the per-job clone and its temporary output files."""
+    # Keep this guard close to the deletion so a future caller cannot
+    # accidentally turn cleanup into a recursive delete of another path.
+    if path.parent != WORK or not path.name.startswith("job-"):
+        raise ValueError(f"refusing to clean unexpected workspace: {path}")
+    shutil.rmtree(path, ignore_errors=True)
+    for artifact in (log, final):
+        try:
+            artifact.unlink()
+        except OSError:
+            pass
+
+
 def work(job, prompt, reply):
     jid = job["id"]
     path = WORK / f"job-{time.strftime('%Y%m%d-%H%M%S')}-{jid}"
@@ -136,6 +150,7 @@ def work(job, prompt, reply):
             tail = log.read_text(errors="replace")[-2500:].strip() if log.exists() else ""
             send(f"Agent failed: {e}" + (f"\n\n{tail}" if tail else ""), reply)
     finally:
+        cleanup_workspace(path, log, final)
         JOBS.pop(jid, None)
         try:
             api("deleteMessage", chat_id=CHAT, message_id=job["message"])
