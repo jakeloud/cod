@@ -97,7 +97,7 @@ def work(job, prompt, reply):
             if command(job, ["git", "config", key, value], cwd=path, log=log):
                 raise RuntimeError(f"git config {key} failed")
         rc = command(job, ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
-                           "--color", "never", "-C", str(path),
+                           "--dangerously-bypass-hook-trust", "--color", "never", "-C", str(path),
                            "--output-last-message", str(final), prompt], log=log)
         if job["stopped"]:
             send("Agent interrupted.", reply)
