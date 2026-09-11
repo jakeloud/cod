@@ -106,8 +106,8 @@ def work(job, prompt, reply):
     try:
         if command(job, ["git", "clone", "--", REPO, str(path)], env=env, log=log):
             raise RuntimeError("git clone failed")
-        for key, value in (("user.name", "cod-agent"),
-                           ("user.email", "cod-agent@noreply.github.com")):
+        for key, value in (("user.name", "cod-claw"),
+                           ("user.email", "328166668+cod-claw@users.noreply.github.com")):
             if command(job, ["git", "config", key, value], cwd=path, log=log):
                 raise RuntimeError(f"git config {key} failed")
         rc = command(job, ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
