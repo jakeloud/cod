@@ -215,7 +215,7 @@ def main():
     KEY.parent.mkdir(exist_ok=True)
     if not KEY.exists():
         subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C",
-                        "cod-agent", "-f", str(KEY)], check=True)
+                        "cod-claw", "-f", str(KEY)], check=True)
     elif not KEY.with_suffix(".pub").exists():
         KEY.with_suffix(".pub").write_bytes(
             subprocess.check_output(["ssh-keygen", "-y", "-f", str(KEY)]) + b"\n")
