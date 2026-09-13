@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import getpass
+import csv
 import html
 import json
 import os
@@ -9,6 +10,7 @@ import shutil
 import signal
 import subprocess
 import threading
+import tempfile
 import time
 import urllib.parse
 import urllib.request
@@ -21,6 +23,10 @@ ENV = ROOT / ".env"
 WORK = ROOT / "workspaces"
 KEY = ROOT / ".ssh" / "id_ed25519"
 JOBS = {}
+THREADS = ROOT / "threads.csv"
+DEBOUNCE = 1.0
+THREAD_LOCK = threading.Lock()
+PENDING = {}
 
 
 def api(method, **data):
@@ -54,16 +60,28 @@ def commit_url(repo, commit):
     return f"https://github.com/{path.removesuffix('.git')}/commit/{commit}"
 
 
-def command(job, args, cwd=None, env=None, log=None):
+def command(job, args, cwd=None, env=None, log=None, capture_run_id=False):
     out = open(log, "ab") if log else subprocess.DEVNULL
     try:
         if job["stopped"]:
             return -signal.SIGKILL
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
-                             stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
+                             stdout=subprocess.PIPE if capture_run_id else out,
+                             stderr=subprocess.STDOUT, start_new_session=True,
+                             text=capture_run_id)
         job["proc"] = p
         if job["stopped"]:
             os.killpg(p.pid, signal.SIGKILL)
+        if capture_run_id:
+            for line in p.stdout:
+                out.write(line.encode())
+                try:
+                    event = json.loads(line)
+                    if event.get("type") == "thread.started":
+                        job["run_id"] = event.get("thread_id")
+                        remember(job["messages"] + [job["message"]], job["run_id"])
+                except (json.JSONDecodeError, TypeError):
+                    pass
         return p.wait()
     finally:
         job["proc"] = None
@@ -80,6 +98,33 @@ def send(text, reply=None, markup=None, parse_mode=None):
     if parse_mode:
         data["parse_mode"] = parse_mode
     return api("sendMessage", **data)
+
+
+def thread_id(message_id):
+    if not message_id or not THREADS.exists():
+        return None
+    with THREAD_LOCK, THREADS.open(newline="") as f:
+        return next((row["run_id"] for row in csv.DictReader(f)
+                     if row.get("message_id") == str(message_id)), None)
+
+
+def remember(message_ids, run_id):
+    if not run_id:
+        return
+    with THREAD_LOCK:
+        rows = []
+        if THREADS.exists():
+            with THREADS.open(newline="") as f:
+                rows = list(csv.DictReader(f))
+        known = {row["message_id"] for row in rows}
+        rows.extend({"message_id": str(message_id), "run_id": run_id}
+                    for message_id in message_ids if str(message_id) not in known)
+        with tempfile.NamedTemporaryFile("w", newline="", dir=ROOT, delete=False) as f:
+            writer = csv.DictWriter(f, fieldnames=("message_id", "run_id"))
+            writer.writeheader()
+            writer.writerows(rows)
+            temporary = f.name
+        os.replace(temporary, THREADS)
 
 
 def cleanup_workspace(path, log, final):
@@ -110,11 +155,20 @@ def work(job, prompt, reply):
                            ("user.email", "328166668+cod-claw@users.noreply.github.com")):
             if command(job, ["git", "config", key, value], cwd=path, log=log):
                 raise RuntimeError(f"git config {key} failed")
-        rc = command(job, ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
-                           "--dangerously-bypass-hook-trust", "--color", "never", "-C", str(path),
-                           "--output-last-message", str(final), prompt], log=log)
+        if job.get("run_id"):
+            codex = ["codex", "exec", "resume", "--dangerously-bypass-approvals-and-sandbox",
+                     "--dangerously-bypass-hook-trust", "--color", "never", "-o", str(final),
+                     job["run_id"], prompt]
+        else:
+            codex = ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
+                     "--dangerously-bypass-hook-trust", "--color", "never", "-C", str(path),
+                     "--output-last-message", str(final), "--json", prompt]
+        rc = command(job, codex, cwd=path, log=log,
+                     capture_run_id=not job.get("run_id"))
+        remember(job["messages"], job.get("run_id"))
         if job["stopped"]:
-            send("Agent interrupted.", reply)
+            result = send("Agent interrupted.", reply)
+            remember([result["message_id"]], job.get("run_id"))
             return
         if rc:
             raise RuntimeError(f"codex exited with status {rc}")
@@ -140,15 +194,18 @@ def work(job, prompt, reply):
             suffix = f'\n\nPushed commit: <a href="{html.escape(url, quote=True)}">{commit}</a>'
             while len(html.escape(answer)) + len(suffix) > 4000:
                 answer = answer[:-100]
-            send(html.escape(answer) + suffix, reply, parse_mode="HTML")
+            result = send(html.escape(answer) + suffix, reply, parse_mode="HTML")
         else:
-            send(f"{answer}\n\nPushed commit: {commit}", reply)
+            result = send(f"{answer}\n\nPushed commit: {commit}", reply)
+        remember(job["messages"] + [job["message"], result["message_id"]], job.get("run_id"))
     except Exception as e:
         if job["stopped"]:
-            send("Agent interrupted.", reply)
+            result = send("Agent interrupted.", reply)
+            remember([result["message_id"]], job.get("run_id"))
         else:
             tail = log.read_text(errors="replace")[-2500:].strip() if log.exists() else ""
-            send(f"Agent failed: {e}" + (f"\n\n{tail}" if tail else ""), reply)
+            result = send(f"Agent failed: {e}" + (f"\n\n{tail}" if tail else ""), reply)
+            remember([result["message_id"]], job.get("run_id"))
     finally:
         cleanup_workspace(path, log, final)
         JOBS.pop(jid, None)
@@ -158,20 +215,50 @@ def work(job, prompt, reply):
             pass
 
 
-def start(message, username):
-    text = message.get("text", "")
-    prompt = re.sub(fr"@{re.escape(username)}\b", "", text,
-                    flags=re.IGNORECASE).strip()
+def launch(messages, username, run_id=None):
+    prompt = "\n".join(re.sub(fr"@{re.escape(username)}\b", "", message.get("text", ""),
+                                flags=re.IGNORECASE).strip() for message in messages).strip()
     if not prompt:
-        send("Send me a task for Codex.", message["message_id"])
+        send("Send me a task for Codex.", messages[0]["message_id"])
         return
     jid = token_hex(4)
-    status = send("Spinning up agent…", message["message_id"], {
+    status = send("Spinning up agent…", messages[0]["message_id"], {
         "inline_keyboard": [[{"text": "Interrupt", "callback_data": f"stop:{jid}"}]]
     })
-    job = {"id": jid, "message": status["message_id"], "proc": None, "stopped": False}
+    job = {"id": jid, "message": status["message_id"],
+           "messages": [m["message_id"] for m in messages], "run_id": run_id,
+           "proc": None, "stopped": False}
+    remember(job["messages"] + [status["message_id"]], run_id)
     JOBS[jid] = job
-    threading.Thread(target=work, args=(job, prompt, message["message_id"]), daemon=True).start()
+    threading.Thread(target=work, args=(job, prompt, messages[0]["message_id"]), daemon=True).start()
+
+
+def start(message, username):
+    parent = message.get("reply_to_message", {}).get("message_id")
+    key = thread_id(parent) or "new"
+    with THREAD_LOCK:
+        if not parent and PENDING:
+            key = max(PENDING, key=lambda pending_key: PENDING[pending_key]["created"])
+        pending = PENDING.get(key)
+        if pending:
+            pending["messages"].append(message)
+            pending["generation"] += 1
+        else:
+            pending = {"messages": [message], "generation": 0, "created": time.monotonic()}
+            PENDING[key] = pending
+        generation = pending["generation"]
+
+    def delayed_launch():
+        time.sleep(DEBOUNCE)
+        with THREAD_LOCK:
+            current = PENDING.get(key)
+            if not current or current["generation"] != generation:
+                return
+            PENDING.pop(key, None)
+            batch = current["messages"]
+        launch(batch, username, None if key == "new" else key)
+
+    threading.Thread(target=delayed_launch, daemon=True).start()
 
 
 def stop(query):
