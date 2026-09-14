@@ -171,34 +171,87 @@
   </g>
 
   <!-- Small rounded chef hand -->
-  <g filter="url(#lift)">
-    <path d="M217 194L235 202Q238 204 236 209L229 222
-             Q227 226 223 223L209 215Z" fill="url(#cuff)"/>
-    <path d="M226 201L218 216" stroke="#FFFFFF"
-          stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<!-- Simplified clay hand gripping the pan -->
+<g filter="url(#lift)">
+  <!-- Rounded chef cuff -->
+  <path
+    d="M218 198
+       L234 205
+       Q239 208 236 214
+       L232 222
+       Q230 226 225 224
+       L212 217
+       Q208 215 211 210Z"
+    fill="url(#cuff)"
+  />
+  <path
+    d="M227 205L220 218"
+    stroke="#FFFDF7"
+    stroke-width="4"
+    stroke-linecap="round"
+    opacity=".65"
+  />
 
-    <path d="M198 180Q197 173 202 171Q207 169 210 175
-             L215 187Q225 190 225 198Q225 208 216 213
-             Q208 217 200 211L190 201Q186 196 190 191Z"
-          fill="url(#skin)"/>
+  <!-- One soft palm tucked beneath the handle -->
+  <path
+    d="M197 189
+       Q202 185 209 187
+       L216 190
+       Q223 193 224 200
+       Q225 207 219 212
+       Q213 217 205 212
+       L195 205
+       Q189 201 190 196
+       Q191 191 197 189Z"
+    fill="url(#skin)"
+  />
 
-    <!-- Curled fingers overlap the handle -->
-    <rect x="189" y="177" width="10" height="20" rx="5"
-          transform="rotate(-19 194 187)"
-          fill="url(#skin)" filter="url(#detail)"/>
-    <rect x="198" y="178" width="10" height="21" rx="5"
-          transform="rotate(-15 203 188)"
-          fill="url(#skin)" filter="url(#detail)"/>
+  <!-- Handle remains visible through the grip -->
+  <path
+    d="M189 181L211 184
+       Q216 185 215 190
+       Q214 194 209 193
+       L189 190Z"
+    fill="#25262C"
+  />
+  <path
+    d="M192 183L208 186"
+    stroke="#62636B"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    opacity=".7"
+  />
 
-    <!-- Plump thumb -->
-    <path d="M216 196Q215 191 209 190L199 188
-             Q192 187 191 193Q190 198 197 201L207 205
-             Q214 207 217 202Z"
-          fill="url(#skin)" filter="url(#detail)"/>
-    <path d="M198 192L207 194" stroke="#FFEBD4"
-          stroke-width="4" stroke-linecap="round"
-          opacity=".75" filter="url(#soft)"/>
-    <path d="M193 182L195 188" stroke="#FFE9D0"
-          stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
-  </g>
+  <!-- Single plump thumb wrapping over the handle -->
+  <path
+    d="M215 199
+       Q219 195 216 190
+       L209 181
+       Q205 176 201 179
+       Q197 182 201 187
+       L204 192
+       Q207 199 211 200
+       Q213 201 215 199Z"
+    fill="url(#skin)"
+    filter="url(#detail)"
+  />
+
+  <!-- Soft thumb and palm highlights -->
+  <path
+    d="M203 182L209 189"
+    stroke="#FFEAD2"
+    stroke-width="4"
+    stroke-linecap="round"
+    opacity=".7"
+    filter="url(#soft)"
+  />
+  <path
+    d="M195 198Q198 203 205 206"
+    stroke="#FFE1C3"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity=".45"
+    filter="url(#soft)"
+  />
+</g>
 </svg>
