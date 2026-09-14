@@ -1,8 +1,8 @@
 # cod
 
-Telegram prompts are collected for one second, so pasted message chunks and quick follow-ups
-are sent to Codex as one prompt. Reply to any prompt or bot response to continue that Codex
-thread; the message-to-thread links are kept in `threads.csv`.
+When one prompt is enough
+
+![logo](./logo.svg)
 
 ## Setup
 
