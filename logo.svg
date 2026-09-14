@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="fish" x1="76" y1="60" x2="155" y2="125" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B7A080"/>
+      <stop offset="1" stop-color="#79634B"/>
+    </linearGradient>
+    <linearGradient id="pan" x1="95" y1="147" x2="115" y2="202" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#36373A"/>
+      <stop offset="1" stop-color="#141518"/>
+    </linearGradient>
+    <linearGradient id="hand" x1="194" y1="178" x2="225" y2="217" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD7B7"/>
+      <stop offset="1" stop-color="#D99575"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#30261E" flood-opacity=".16"/>
+    </filter>
+  </defs>
+
+  <!-- Soft grounding shadow -->
+  <ellipse cx="137" cy="225" rx="79" ry="8" fill="#30261E" opacity=".08"/>
+
+  <!-- Jumping, block-shaped brown cod -->
+  <g transform="rotate(-24 119 89)" filter="url(#shadow)">
+    <path d="M78 79H62V68H48V107H62V96H78Z" fill="#80664D"/>
+    <path d="M91 67V54H115V65Z" fill="#8A7053"/>
+    <path d="M103 111V125H124V111Z" fill="#80664D"/>
+    <path d="M77  seventy" fill="none"/>
+    <path d="M77 72H92V65H137V72H155V83H166V104H153V113H94V106H77Z"
+          fill="url(#fish)"/>
+    <path d="M92 96H153V104H145V113H94V106H85V96Z" fill="#CCB99B"/>
+    <path d="M88 73H126V80H88Z" fill="#D1BDA0" opacity=".7"/>
+    <path d="M105 87H122V101H113V95H105Z" fill="#846B50"/>
+    <path d="M146 79H154V87H146Z" fill="#292722"/>
+    <path d="M146 79H149V82H146Z" fill="#FFF5DE"/>
+    <path d="M158 97H166" stroke="#68513F" stroke-width="3"/>
+    <path d="M55 78V96" stroke="#B09978" stroke-width="5"/>
+  </g>
+
+  <!-- Small motion accents -->
+  <path d="M75 132L69 142M108 135L105 148M150 123L155 132"
+        stroke="#C6AB82" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Rounded black skillet -->
+  <g transform="rotate(10 128 174)" filter="url(#shadow)">
+    <path d="M43 166C46 189 69 204 108 204C145 204 169 190 173 167Z"
+          fill="url(#pan)"/>
+    <path d="M165 171H211" stroke="#191A1D" stroke-width="17" stroke-linecap="round"/>
+    <path d="M176 167H207" stroke="#45464A" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="108" cy="166" rx="65" ry="24" fill="#414246"/>
+    <ellipse cx="108" cy="165" rx="57" ry="17" fill="#1B1C1F"/>
+    <path d="M58 165C64 156 83 151 104 151"
+          stroke="#696A6D" stroke-width="3" stroke-linecap="round"/>
+    <path d="M61 185C72 194 87 197 103 197"
+          stroke="#48494C" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+  </g>
+
+  <!-- Little clay-like hand gripping the handle -->
+  <g filter="url(#shadow)">
+    <path d="M217 195L233 203L224 222L208 212Z" fill="#F3EEE5"/>
+    <path d="M223 201L228 204L222 216L217 213Z" fill="#DCD8D2"/>
+    <path d="M212 211C205 211 198 207 194 202L187 192
+             C184 187 186 182 190 181C194 179 197 182 200 186
+             L199 175C198 170 201 167 205 168
+             C209 169 210 173 211 178L214 188
+             C220 190 223 194 221 201C220 207 217 211 212 211Z"
+          fill="url(#hand)"/>
+    <path d="M190 186L199 195"
+          stroke="#FFE5CE" stroke-width="5" stroke-linecap="round"/>
+    <path d="M204 175L207 186"
+          stroke="#FFE5CE" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>
