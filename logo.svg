@@ -1,73 +1,204 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"
+     viewBox="0 0 256 256" fill="none">
   <defs>
-    <linearGradient id="fish" x1="76" y1="60" x2="155" y2="125" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#B7A080"/>
-      <stop offset="1" stop-color="#79634B"/>
+    <linearGradient id="fishSide" x1="90" y1="65" x2="120" y2="121" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BEA181"/>
+      <stop offset=".48" stop-color="#A18462"/>
+      <stop offset="1" stop-color="#67503B"/>
     </linearGradient>
-    <linearGradient id="pan" x1="95" y1="147" x2="115" y2="202" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#36373A"/>
-      <stop offset="1" stop-color="#141518"/>
+    <linearGradient id="fishTop" x1="100" y1="57" x2="107" y2="89" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E1C9A6"/>
+      <stop offset="1" stop-color="#AC8D69"/>
     </linearGradient>
-    <linearGradient id="hand" x1="194" y1="178" x2="225" y2="217" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFD7B7"/>
-      <stop offset="1" stop-color="#D99575"/>
+    <linearGradient id="belly" x1="115" y1="93" x2="119" y2="115" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DBC6A5"/>
+      <stop offset="1" stop-color="#AD9070"/>
     </linearGradient>
-    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
-      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#30261E" flood-opacity=".16"/>
+    <linearGradient id="fin" x1="100" y1="80" x2="117" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C5A47A"/>
+      <stop offset="1" stop-color="#75543B"/>
+    </linearGradient>
+    <linearGradient id="tail" x1="48" y1="70" x2="78" y2="105" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C2A17B"/>
+      <stop offset=".5" stop-color="#95724F"/>
+      <stop offset="1" stop-color="#674A34"/>
+    </linearGradient>
+    <linearGradient id="panBody" x1="75" y1="164" x2="133" y2="211" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#53545A"/>
+      <stop offset=".32" stop-color="#303136"/>
+      <stop offset=".76" stop-color="#17181C"/>
+      <stop offset="1" stop-color="#0B0C10"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="108" y1="139" x2="108" y2="189" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#686970"/>
+      <stop offset=".45" stop-color="#34353B"/>
+      <stop offset=".8" stop-color="#17181D"/>
+      <stop offset="1" stop-color="#55565E"/>
+    </linearGradient>
+    <radialGradient id="bowl" cx=".49" cy=".78" r=".8">
+      <stop stop-color="#414248"/>
+      <stop offset=".55" stop-color="#23242A"/>
+      <stop offset="1" stop-color="#090A0E"/>
+    </radialGradient>
+    <linearGradient id="handle" x1="182" y1="165" x2="179" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#64656C"/>
+      <stop offset=".3" stop-color="#35363C"/>
+      <stop offset=".75" stop-color="#1A1B20"/>
+      <stop offset="1" stop-color="#0E0F13"/>
+    </linearGradient>
+    <radialGradient id="skin" cx=".3" cy=".2" r=".9">
+      <stop stop-color="#FFE5CA"/>
+      <stop offset=".42" stop-color="#F2BE98"/>
+      <stop offset=".78" stop-color="#D79773"/>
+      <stop offset="1" stop-color="#AE7054"/>
+    </radialGradient>
+    <linearGradient id="cuff" x1="216" y1="194" x2="229" y2="218" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFF7"/>
+      <stop offset=".5" stop-color="#E9E6DF"/>
+      <stop offset="1" stop-color="#A8A7A5"/>
+    </linearGradient>
+    <radialGradient id="eye" cx=".32" cy=".25" r=".8">
+      <stop stop-color="#66605A"/>
+      <stop offset=".45" stop-color="#302B26"/>
+      <stop offset="1" stop-color="#120F0D"/>
+    </radialGradient>
+
+    <filter id="lift" x="-40%" y="-50%" width="190%" height="220%">
+      <feDropShadow dx="1" dy="7" stdDeviation="4" flood-color="#392819" flood-opacity=".22"/>
+    </filter>
+    <filter id="detail" x="-50%" y="-50%" width="200%" height="220%">
+      <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#4D321F" flood-opacity=".3"/>
+    </filter>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="soft">
+      <feGaussianBlur stdDeviation="1.2"/>
     </filter>
   </defs>
 
-  <!-- Soft grounding shadow -->
-  <ellipse cx="137" cy="225" rx="79" ry="8" fill="#30261E" opacity=".08"/>
+  <!-- Soft studio shadow; transparent background -->
+  <ellipse cx="137" cy="228" rx="77" ry="8"
+           fill="#302823" opacity=".13" filter="url(#blur)"/>
 
-  <!-- Jumping, block-shaped brown cod -->
-  <g transform="rotate(-24 119 89)" filter="url(#shadow)">
-    <path d="M78 79H62V68H48V107H62V96H78Z" fill="#80664D"/>
-    <path d="M91 67V54H115V65Z" fill="#8A7053"/>
-    <path d="M103 111V125H124V111Z" fill="#80664D"/>
-    <path d="M77  seventy" fill="none"/>
-    <path d="M77 72H92V65H137V72H155V83H166V104H153V113H94V106H77Z"
-          fill="url(#fish)"/>
-    <path d="M92 96H153V104H145V113H94V106H85V96Z" fill="#CCB99B"/>
-    <path d="M88 73H126V80H88Z" fill="#D1BDA0" opacity=".7"/>
-    <path d="M105 87H122V101H113V95H105Z" fill="#846B50"/>
-    <path d="M146 79H154V87H146Z" fill="#292722"/>
-    <path d="M146 79H149V82H146Z" fill="#FFF5DE"/>
-    <path d="M158 97H166" stroke="#68513F" stroke-width="3"/>
-    <path d="M55 78V96" stroke="#B09978" stroke-width="5"/>
+  <!-- Chunky brown cod, tilted upward -->
+  <g transform="rotate(-25 112 89)" filter="url(#lift)">
+    <path d="M93 69L96 55Q97 51 102 52L118 58L123 70Z"
+          fill="url(#fin)"/>
+    <path d="M98 57L113 61" stroke="#E0C29B"
+          stroke-width="3" stroke-linecap="round" opacity=".65"/>
+
+    <path d="M81 81L61 68Q54 63 51 70L48 98
+             Q48 105 55 103L79 95Z" fill="url(#tail)"/>
+    <path d="M55 73L53 94" stroke="#E2C39B"
+          stroke-width="4" stroke-linecap="round" opacity=".6"/>
+    <path d="M60 77L70 85M59 92L69 89"
+          stroke="#715038" stroke-width="2.5"
+          stroke-linecap="round" opacity=".45"/>
+
+    <path d="M105 106L110 122Q112 126 117 123L130 113L129 103Z"
+          fill="url(#fin)"/>
+
+    <!-- Rounded voxel silhouette -->
+    <path d="M76 79Q76 72 83 71H91V66Q91 61 98 61H132
+             Q140 61 143 67L145 72H152Q159 72 161 80
+             L165 97Q167 106 159 110L150 114H96
+             Q89 114 86 109L83 104Q76 103 76 96Z"
+          fill="url(#fishSide)"/>
+
+    <!-- Light-catching upper plane -->
+    <path d="M80 78Q80 75 86 75H95V69Q95 66 101 66H131
+             Q136 66 138 72L142 79L153 81L151 86H93L81 91Z"
+          fill="url(#fishTop)"/>
+    <path d="M97 69H129" stroke="#F1DDC0" stroke-width="4"
+          stroke-linecap="round" opacity=".55" filter="url(#soft)"/>
+
+    <!-- Rounded belly -->
+    <path d="M86 98Q111 104 160 96L161 101
+             Q161 107 153 109H98Q90 109 86 103Z" fill="url(#belly)"/>
+    <path d="M97 105Q123 109 147 104" stroke="#ECD8BA"
+          stroke-width="3" stroke-linecap="round" opacity=".45"/>
+
+    <!-- Raised side fin -->
+    <path d="M106 87Q111 83 117 87L128 98
+             Q130 102 125 104L112 102Q108 100 106 87Z"
+          fill="url(#fin)" filter="url(#detail)"/>
+    <path d="M111 88L121 97" stroke="#DDC09A"
+          stroke-width="3" stroke-linecap="round" opacity=".7"/>
+
+    <!-- Inset eye socket and glossy clay eye -->
+    <rect x="142" y="78" width="13" height="13" rx="5"
+          fill="#796047"/>
+    <rect x="144" y="79" width="10" height="10" rx="3.5"
+          fill="url(#eye)" filter="url(#detail)"/>
+    <circle cx="147" cy="82" r="1.7" fill="#FFF3DA"/>
+    <path d="M158 99L164 98" stroke="#6C4F39"
+          stroke-width="2.5" stroke-linecap="round"/>
   </g>
 
-  <!-- Small motion accents -->
-  <path d="M75 132L69 142M108 135L105 148M150 123L155 132"
-        stroke="#C6AB82" stroke-width="5" stroke-linecap="round"/>
-
-  <!-- Rounded black skillet -->
-  <g transform="rotate(10 128 174)" filter="url(#shadow)">
-    <path d="M43 166C46 189 69 204 108 204C145 204 169 190 173 167Z"
-          fill="url(#pan)"/>
-    <path d="M165 171H211" stroke="#191A1D" stroke-width="17" stroke-linecap="round"/>
-    <path d="M176 167H207" stroke="#45464A" stroke-width="4" stroke-linecap="round"/>
-    <ellipse cx="108" cy="166" rx="65" ry="24" fill="#414246"/>
-    <ellipse cx="108" cy="165" rx="57" ry="17" fill="#1B1C1F"/>
-    <path d="M58 165C64 156 83 151 104 151"
-          stroke="#696A6D" stroke-width="3" stroke-linecap="round"/>
-    <path d="M61 185C72 194 87 197 103 197"
-          stroke="#48494C" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+  <!-- Small clay-like jump marks -->
+  <g stroke-linecap="round" filter="url(#detail)">
+    <path d="M72 126L67 134M103 131L101 140M148 121L152 128"
+          stroke="#BB9D76" stroke-width="5"/>
+    <path d="M71 125L68 130M102 130L101 136M147 120L150 124"
+          stroke="#E3CCAA" stroke-width="2"/>
   </g>
 
-  <!-- Little clay-like hand gripping the handle -->
-  <g filter="url(#shadow)">
-    <path d="M217 195L233 203L224 222L208 212Z" fill="#F3EEE5"/>
-    <path d="M223 201L228 204L222 216L217 213Z" fill="#DCD8D2"/>
-    <path d="M212 211C205 211 198 207 194 202L187 192
-             C184 187 186 182 190 181C194 179 197 182 200 186
-             L199 175C198 170 201 167 205 168
-             C209 169 210 173 211 178L214 188
-             C220 190 223 194 221 201C220 207 217 211 212 211Z"
-          fill="url(#hand)"/>
-    <path d="M190 186L199 195"
-          stroke="#FFE5CE" stroke-width="5" stroke-linecap="round"/>
-    <path d="M204 175L207 186"
-          stroke="#FFE5CE" stroke-width="4" stroke-linecap="round"/>
+  <!-- Deep skillet, with a thick rolled rim -->
+  <g transform="rotate(9 121 175)" filter="url(#lift)">
+    <path d="M162 163L208 165Q219 166 219 174
+             Q219 181 210 182L163 180Z" fill="url(#handle)"/>
+    <path d="M177 168L208 170" stroke="#81828A"
+          stroke-width="3" stroke-linecap="round" opacity=".55"/>
+
+    <path d="M41 164C42 190 60 209 105 212
+             C149 215 171 195 175 166Z" fill="url(#panBody)"/>
+    <path d="M51 181C57 196 77 204 99 205"
+          stroke="#74757D" stroke-width="4" stroke-linecap="round"
+          opacity=".24" filter="url(#soft)"/>
+
+    <ellipse cx="108" cy="164" rx="67" ry="28" fill="url(#rim)"/>
+    <ellipse cx="108" cy="163" rx="58" ry="20" fill="url(#bowl)"/>
+    <path d="M55 163C58 151 81 143 108 143C132 143 153 149 161 157"
+          stroke="#8D8E94" stroke-width="2.5"
+          stroke-linecap="round" opacity=".55"/>
+    <path d="M52 173C75 192 135 193 162 174"
+          stroke="#777880" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+
+    <!-- Diffuse reflection inside the bowl -->
+    <ellipse cx="107" cy="172" rx="33" ry="5"
+             fill="#85868B" opacity=".11" filter="url(#blur)"/>
+  </g>
+
+  <!-- Small rounded chef hand -->
+  <g filter="url(#lift)">
+    <path d="M217 194L235 202Q238 204 236 209L229 222
+             Q227 226 223 223L209 215Z" fill="url(#cuff)"/>
+    <path d="M226 201L218 216" stroke="#FFFFFF"
+          stroke-width="4" stroke-linecap="round" opacity=".7"/>
+
+    <path d="M198 180Q197 173 202 171Q207 169 210 175
+             L215 187Q225 190 225 198Q225 208 216 213
+             Q208 217 200 211L190 201Q186 196 190 191Z"
+          fill="url(#skin)"/>
+
+    <!-- Curled fingers overlap the handle -->
+    <rect x="189" y="177" width="10" height="20" rx="5"
+          transform="rotate(-19 194 187)"
+          fill="url(#skin)" filter="url(#detail)"/>
+    <rect x="198" y="178" width="10" height="21" rx="5"
+          transform="rotate(-15 203 188)"
+          fill="url(#skin)" filter="url(#detail)"/>
+
+    <!-- Plump thumb -->
+    <path d="M216 196Q215 191 209 190L199 188
+             Q192 187 191 193Q190 198 197 201L207 205
+             Q214 207 217 202Z"
+          fill="url(#skin)" filter="url(#detail)"/>
+    <path d="M198 192L207 194" stroke="#FFEBD4"
+          stroke-width="4" stroke-linecap="round"
+          opacity=".75" filter="url(#soft)"/>
+    <path d="M193 182L195 188" stroke="#FFE9D0"
+          stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
   </g>
 </svg>
