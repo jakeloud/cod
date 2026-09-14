@@ -157,7 +157,7 @@ def work(job, prompt, reply):
                 raise RuntimeError(f"git config {key} failed")
         if job.get("run_id"):
             codex = ["codex", "exec", "resume", "--dangerously-bypass-approvals-and-sandbox",
-                     "--dangerously-bypass-hook-trust", "--color", "never", "-o", str(final),
+                     "--dangerously-bypass-hook-trust", "-o", str(final),
                      job["run_id"], prompt]
         else:
             codex = ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
