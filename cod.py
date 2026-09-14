@@ -129,8 +129,6 @@ def remember(message_ids, run_id):
 
 def cleanup_workspace(path, log, final):
     """Remove the per-job clone and its temporary output files."""
-    # Keep this guard close to the deletion so a future caller cannot
-    # accidentally turn cleanup into a recursive delete of another path.
     if path.parent != WORK or not path.name.startswith("job-"):
         raise ValueError(f"refusing to clean unexpected workspace: {path}")
     shutil.rmtree(path, ignore_errors=True)
