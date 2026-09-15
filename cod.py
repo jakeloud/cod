@@ -201,6 +201,9 @@ def work(job, prompt, reply):
                      "--output-last-message", str(final), "--json"]
         for image in images:
             codex += ["--image", str(image)]
+        # --image accepts multiple values; terminate options so it cannot consume
+        # the session id or prompt as another image path.
+        codex.append("--")
         codex += ([job["run_id"]] if job.get("run_id") else []) + [prompt]
         rc = command(job, codex, cwd=path, log=log,
                      capture_run_id=not job.get("run_id"))
@@ -258,8 +261,10 @@ def launch(messages, username, run_id=None):
     prompt = "\n".join(re.sub(fr"@{re.escape(username)}\b", "", message_text(message),
                                 flags=re.IGNORECASE).strip() for message in messages).strip()
     if not prompt:
-        send("Send me a task for Codex.", messages[0]["message_id"])
-        return
+        if not any(attachment(message) for message in messages):
+            send("Send me a task for Codex.", messages[0]["message_id"])
+            return
+        prompt = "Please inspect the attached file(s) and determine the appropriate task."
     jid = token_hex(4)
     status = send("Spinning up agent…", messages[0]["message_id"], {
         "inline_keyboard": [[{"text": "Interrupt", "callback_data": f"stop:{jid}"}]]
