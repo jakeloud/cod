@@ -42,6 +42,33 @@ def api(method, **data):
     return out["result"]
 
 
+def message_text(message):
+    return (message.get("text") or message.get("caption") or "").strip()
+
+
+def attachment(message):
+    if message.get("photo"):
+        photo = message["photo"][-1]
+        return {"file_id": photo["file_id"],
+                "name": f"photo-{message['message_id']}.jpg", "image": True}
+    if message.get("document"):
+        document = message["document"]
+        name = Path(document.get("file_name") or
+                    f"file-{message['message_id']}").name
+        return {"file_id": document["file_id"], "name": name,
+                "image": document.get("mime_type", "").startswith("image/")}
+    return None
+
+
+def download_attachment(item, directory):
+    info = api("getFile", file_id=item["file_id"])
+    path = directory / item["name"]
+    url = f"https://api.telegram.org/file/bot{TOKEN}/{info['file_path']}"
+    with urllib.request.urlopen(url, timeout=60) as source, path.open("wb") as target:
+        shutil.copyfileobj(source, target)
+    return path
+
+
 def repo_url(repo):
     if re.fullmatch(r"[\w.-]+/[\w.-]+(?:\.git)?", repo):
         return f"git@github.com:{repo.removesuffix('.git')}.git"
@@ -127,11 +154,12 @@ def remember(message_ids, run_id):
         os.replace(temporary, THREADS)
 
 
-def cleanup_workspace(path, log, final):
+def cleanup_workspace(path, log, final, inputs):
     """Remove the per-job clone and its temporary output files."""
     if path.parent != WORK or not path.name.startswith("job-"):
         raise ValueError(f"refusing to clean unexpected workspace: {path}")
     shutil.rmtree(path, ignore_errors=True)
+    shutil.rmtree(inputs, ignore_errors=True)
     for artifact in (log, final):
         try:
             artifact.unlink()
@@ -144,6 +172,7 @@ def work(job, prompt, reply):
     path = WORK / f"job-{time.strftime('%Y%m%d-%H%M%S')}-{jid}"
     log = path.with_suffix(".log")
     final = path.with_suffix(".final")
+    inputs = path.parent / f"{path.name}-inputs"
     ssh = f"ssh -i {shlex.quote(str(KEY))} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
     env = os.environ | {"GIT_SSH_COMMAND": ssh}
     try:
@@ -153,14 +182,26 @@ def work(job, prompt, reply):
                            ("user.email", "328166668+cod-claw@users.noreply.github.com")):
             if command(job, ["git", "config", key, value], cwd=path, log=log):
                 raise RuntimeError(f"git config {key} failed")
+        inputs.mkdir()
+        files, images = [], []
+        for message in job["input_messages"]:
+            item = attachment(message)
+            if not item:
+                continue
+            local = download_attachment(item, inputs)
+            (images if item["image"] else files).append(local)
+        if files:
+            prompt += "\n\nAttached files:\n" + "\n".join(f"- {file}" for file in files)
         if job.get("run_id"):
             codex = ["codex", "exec", "resume", "--dangerously-bypass-approvals-and-sandbox",
-                     "--dangerously-bypass-hook-trust", "-o", str(final),
-                     job["run_id"], prompt]
+                     "--dangerously-bypass-hook-trust", "-o", str(final)]
         else:
             codex = ["codex", "exec", "--dangerously-bypass-approvals-and-sandbox",
                      "--dangerously-bypass-hook-trust", "--color", "never", "-C", str(path),
-                     "--output-last-message", str(final), "--json", prompt]
+                     "--output-last-message", str(final), "--json"]
+        for image in images:
+            codex += ["--image", str(image)]
+        codex += ([job["run_id"]] if job.get("run_id") else []) + [prompt]
         rc = command(job, codex, cwd=path, log=log,
                      capture_run_id=not job.get("run_id"))
         remember(job["messages"], job.get("run_id"))
@@ -205,7 +246,7 @@ def work(job, prompt, reply):
             result = send(f"Agent failed: {e}" + (f"\n\n{tail}" if tail else ""), reply)
             remember([result["message_id"]], job.get("run_id"))
     finally:
-        cleanup_workspace(path, log, final)
+        cleanup_workspace(path, log, final, inputs)
         JOBS.pop(jid, None)
         try:
             api("deleteMessage", chat_id=CHAT, message_id=job["message"])
@@ -214,7 +255,7 @@ def work(job, prompt, reply):
 
 
 def launch(messages, username, run_id=None):
-    prompt = "\n".join(re.sub(fr"@{re.escape(username)}\b", "", message.get("text", ""),
+    prompt = "\n".join(re.sub(fr"@{re.escape(username)}\b", "", message_text(message),
                                 flags=re.IGNORECASE).strip() for message in messages).strip()
     if not prompt:
         send("Send me a task for Codex.", messages[0]["message_id"])
@@ -224,7 +265,8 @@ def launch(messages, username, run_id=None):
         "inline_keyboard": [[{"text": "Interrupt", "callback_data": f"stop:{jid}"}]]
     })
     job = {"id": jid, "message": status["message_id"],
-           "messages": [m["message_id"] for m in messages], "run_id": run_id,
+           "messages": [m["message_id"] for m in messages], "input_messages": messages,
+           "run_id": run_id,
            "proc": None, "stopped": False}
     remember(job["messages"] + [status["message_id"]], run_id)
     JOBS[jid] = job
